@@ -5,12 +5,16 @@ import { getLinkDbColl } from "../utils/dbColls";
 export class DeleteLinkController {
   static async deleteLink(req: Request, res: Response) {
     try {
-      const { slug } = req.query as { slug: string };
+      const { slug } = req.params as { slug: string };
 
-      if (await slugExists(slug)) {
+      if(!slug) {
+        return res.status(400).json({ error: "Invalid or missing slug in request query" });
+      }
+
+      if (!await slugExists(slug)) {
         return res.status(404).json({
           error:
-            "Cannot delete link that is cached in Redis. Please clear cache first.",
+            "Link not found.",
         });
       }
 

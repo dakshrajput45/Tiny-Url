@@ -71,3 +71,26 @@ export const deleteLinkCache = async (slug: string): Promise<void> => {
     console.error(`Error deleting cache for "${slug}":`, error);
   }
 };
+
+export const updateLinkCache = async (
+  slug: string,
+  longUrl: string,
+  clickCount: number,
+  lastClickedAt: Date | null
+): Promise<void> => {
+  try {
+    const client = await getRedisClient();
+    if (!client) return;
+
+    const cacheValue: CacheValue = {
+      longUrl,
+      clickCount,
+      lastClickedAt,
+    };
+
+    await client.setEx(`slug:${slug}`, 86400, JSON.stringify(cacheValue));
+    console.log(`Cache updated for slug "${slug}"`);
+  } catch (error) {
+    console.error(`Error updating cache for "${slug}":`, error);
+  }
+};

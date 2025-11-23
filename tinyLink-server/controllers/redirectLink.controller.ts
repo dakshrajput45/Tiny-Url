@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getLinkBySlug } from "../utils/redisHelper";
-
+import { postClickActions } from "../utils/postClickActions";
 
 export class RedirectLinkController {
   static async redirectLink(req: Request, res: Response) {
@@ -14,6 +14,7 @@ export class RedirectLinkController {
         return res.status(404).json({ error: "Link not found", slug: slug });
       }
 
+      postClickActions(slug, data.longUrl);
       return res.redirect(302, data.longUrl);
     } catch (error) {
       res.status(500).json({ error: "Internal server error", errMsg: error });

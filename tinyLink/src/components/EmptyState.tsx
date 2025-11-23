@@ -1,7 +1,6 @@
 const EmptyState = () => {
   return (
     <div className="text-center py-12 px-6 text-gray-500">
-      <div className="text-6xl mb-6 opacity-50">🔗</div>
       <h3 className="text-gray-800 text-2xl font-semibold mb-3">
         Start by shortening your first link
       </h3>

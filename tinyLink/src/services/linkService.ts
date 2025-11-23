@@ -1,4 +1,5 @@
 import axiosInstance from "./api";
+import axios from "axios";
 
 interface AddLinkResponse {
   slug: string;
@@ -29,10 +30,37 @@ export const getLink = async (slug: string): Promise<Link> => {
 };
 
 export const getAllLinks = async (): Promise<Link[]> => {
-  const res = await axiosInstance.get<Link[]>("/links");
-  return res.data;
+  const res = await axiosInstance.get<{ message: string; data: Link[] }>("/links");
+  return res.data.data;
 };
 
 export const deleteLink = async (slug: string): Promise<void> => {
   await axiosInstance.delete(`/links/${slug}`);
 };
+
+export interface HealthData {
+  status: string;
+  uptime: number;
+  timestamp: string;
+  database: {
+    status: string;
+    connected: boolean;
+  };
+  redis: {
+    status: string;
+    connected: boolean;
+  };
+  memory: {
+    used: string;
+    total: string;
+  };
+  system: {
+    platform: string;
+    nodeVersion: string;
+  };
+}
+
+export const checkHealth = async (): Promise<HealthData> => {
+  const res = await axios.get<HealthData>("/healthz");
+  return res.data;
+}

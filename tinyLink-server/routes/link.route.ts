@@ -6,7 +6,6 @@ import { DeleteLinkController } from '../controllers/deleteLink.controller';
 const router = Router();
 
 // get link routes
-router.get('/healthz', GetLinkController.healthCheck);
 router.get('/links/:slug', GetLinkController.getLink);
 router.get('/links', GetLinkController.getAllLinksFromDb);
 
