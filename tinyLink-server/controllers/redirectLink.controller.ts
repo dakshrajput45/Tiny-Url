@@ -14,14 +14,14 @@ export class RedirectLinkController {
       }
       const data = await getLinkBySlug(slug);
       if (!data) {
-        return res.redirect(404, `${FRONTEND_URL}/404`);
+        return res.redirect(301, `${FRONTEND_URL}/404`);
       }
 
       postClickActions(slug, data.longUrl);
       return res.redirect(302, data.longUrl);
     } catch (error) {
       console.error("Error in redirectLink:", error);
-      return res.redirect(404, `${FRONTEND_URL}/404`);
+      return res.redirect(301, `${FRONTEND_URL}/404`);
     }
   }
 }
