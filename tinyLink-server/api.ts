@@ -9,7 +9,7 @@ export default async (req: any, res: any) => {
       await connectToDatabase();
       isConnected = true;
     }
-    return app(req, res);
+   return app(req, res);
   } catch (error) {
     console.error('Database connection error:', error);
     res.status(500).json({ error: 'Internal server error' });
