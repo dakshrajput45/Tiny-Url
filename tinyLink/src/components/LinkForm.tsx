@@ -10,9 +10,11 @@ const LinkForm = ({ onSuccess }: LinkFormProps) => {
   const [urlError, setUrlError] = useState("");
 
   const mutation = useAddLink();
+  const backendUrl =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:5500";
 
   const handleSuccess = (data: { slug: string; shortUrl?: string }) => {
-    const shortUrl = data.shortUrl || `https://tinylink.daksh.dev/${data.slug}`;
+    const shortUrl = data.shortUrl || `${backendUrl}/${data.slug}`;
     onSuccess(shortUrl, data.slug);
     setLongUrl("");
     setUrlError("");
