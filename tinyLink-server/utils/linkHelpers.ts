@@ -4,11 +4,12 @@ import { CacheValue } from "../models/cache.model";
 import { Analytics } from "../models/analytics.model";
 import { Link } from "../models/link.model";
 import { getRedisClient } from "../config/redis";
-const domain = "https://tinylink.daksh.dev";
+
 
 export const getShortUrlWithUniqueCode = (ucode: string) => {
   const code = generateRandomCode(ucode);
-  return code.substring(0, 6);
+  const alphanumeric = code.replace(/[^A-Za-z0-9]/g, '');
+  return alphanumeric.substring(0, 6);
 };
 
 export const generateRandomCode = (code: string): string => {
@@ -18,9 +19,9 @@ export const generateRandomCode = (code: string): string => {
     .digest("base64url");
 };
 
-export const getFinalizeSlug = async (email: string, longUrl: string) => {
+export const getFinalizeSlug = async (longUrl: string) => {
   const linkColl = await getLinkDbColl();
-  const code = generateRandomCode(email + longUrl);
+  const code = generateRandomCode(longUrl);
   const slug = getShortUrlWithUniqueCode(code);
 
   const slugExists = await linkColl.findOne({ slug });
@@ -29,19 +30,6 @@ export const getFinalizeSlug = async (email: string, longUrl: string) => {
   }
 
   return slug;
-};
-
-export const getLinkFromDb = async (slug: string) => {
-  const linkColl = await getLinkDbColl();
-  const slugData = await linkColl.findOne(
-    { _id: slug },
-    { projection: { _id: 1 } }
-  );
-
-  if (!slugData) {
-    throw new Error("Slug not found");
-  }
-  return slugData._id;
 };
 
 export const getLinkFromDbAndCacheIt = async (
@@ -58,9 +46,8 @@ export const getLinkFromDbAndCacheIt = async (
   // Prepare cache value
   const cacheValue: CacheValue = {
     longUrl: slugData.url,
-    lastClickedAt: slugData.lastClickedAt || new Date(),
-    clickCount: slugData.clicks || 0,
-    totalUniqueClicks: slugData.totalUniqueClicks || 0,
+    lastClickedAt: slugData.analytics.lastClickedAt || new Date(),
+    clickCount: slugData.analytics.clickCount || 0,
   };
 
   await client.setEx(`slug:${slugData._id}`, 86400, JSON.stringify(cacheValue));
@@ -69,27 +56,30 @@ export const getLinkFromDbAndCacheIt = async (
 
 export const addLinkToCacheAndDb = async (
   slug: string,
-  longUrl: string,
-  email: string
+  longUrl: string
 ) => {
   const linkColl = await getLinkDbColl();
   const analytics: Analytics = {
     clickCount: 0,
-    totalUniqueClicks: 0,
     lastClickedAt: null,
   };
 
   const newLink: Link = {
     _id: slug,
     url: longUrl,
-    email,
     createdAt: new Date(),
     updatedAt: new Date(),
     deleted: false,
     analytics,
   };
 
-  await linkColl.insertOne({ newLink });
+  const cacheValue: CacheValue = {
+    longUrl: longUrl,
+    lastClickedAt: null,
+    clickCount: 0,
+  };
+
+  await linkColl.insertOne(newLink);
   const redisClient = await getRedisClient();
-  await redisClient.setEx(`slug:${slug}`, 86400, JSON.stringify(newLink));
+  await redisClient.setEx(`slug:${slug}`, 86400, JSON.stringify(cacheValue));
 };

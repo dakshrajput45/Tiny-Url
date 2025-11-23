@@ -12,14 +12,23 @@ let redisClient: RedisClientType | null = null;
 export const connectRedis = async (): Promise<RedisClientType> => {
   if (redisClient) return redisClient;
 
+  const redisUsername = process.env['REDIS_USERNAME'] || 'default';
+  const redisPassword = process.env['REDIS_PASSWORD'];
+  const redisHost = process.env['REDIS_HOST'] || 'redis-10134.crce206.ap-south-1-1.ec2.cloud.redislabs.com';
+  const redisPort = Number(process.env['REDIS_PORT']) || 10134;
+
+  if(!redisPassword) {
+    throw new Error('REDIS_PASSWORD is not defined in environment variables');
+  }
+
   try {
     // Create Redis client with your Redis Cloud credentials
     redisClient = createClient({
-      username: process.env['REDIS_USERNAME'] || 'default',
-      password: process.env['REDIS_PASSWORD'],
+      username: redisUsername,
+      password: redisPassword,
       socket: {
-        host: process.env['REDIS_HOST'] || 'redis-10134.crce206.ap-south-1-1.ec2.cloud.redislabs.com',
-        port: Number(process.env['REDIS_PORT']) || 10134
+        host: redisHost,
+        port: redisPort
       }
     });
 

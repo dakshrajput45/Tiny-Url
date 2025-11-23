@@ -1,6 +1,5 @@
 import { getRedisClient } from "../config/redis";
 import { CacheValue } from "../models/cache.model";
-import { getLinkDbColl } from "./dbColls";
 import { getLinkFromDbAndCacheIt } from "./linkHelpers";
 
 /**
@@ -45,10 +44,10 @@ export const getLinkBySlug = async (
     const client = await getRedisClient();
 
     const cachedData = await client.get(`slug:${slug}`);
-
+  
     if (cachedData) {
-      console.log(`Link data for "${slug}" retrieved from cache`);
-      return JSON.parse(cachedData);
+      console.log(`Link data for "${slug}" retrieved from cache : ${cachedData}`);
+      return JSON.parse(cachedData) as CacheValue;
     }
 
     const linkData = await getLinkFromDbAndCacheIt(slug);

@@ -1,6 +1,5 @@
 export interface CacheValue {
     longUrl: string;
-    lastClickedAt: Date;
+    lastClickedAt: Date | null;
     clickCount: number;
-    totalUniqueClicks: number;
 }

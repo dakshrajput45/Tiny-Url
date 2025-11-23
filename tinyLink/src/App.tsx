@@ -1,11 +1,8 @@
+import HomePage from "./pages/HomePage";
 import "./App.css";
 
 function App() {
-  return (
-    <>
-      <div>Daksh</div>
-    </>
-  );
+  return <HomePage />;
 }
 
 export default App;
