@@ -46,12 +46,9 @@ const LinkForm = ({ onSuccess }: LinkFormProps) => {
       return;
     }
 
-    mutation.mutate(
-      { longUrl },
-      {
-        onSuccess: handleSuccess,
-      }
-    );
+    mutation.mutate(longUrl, {
+      onSuccess: handleSuccess,
+    });
   };
 
   return (

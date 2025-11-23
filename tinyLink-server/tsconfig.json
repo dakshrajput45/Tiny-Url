@@ -27,7 +27,7 @@
     "allowUnreachableCode": false
   },
   "include": [
-    "/",
+    "./**/*"
   ],
   "exclude": [
     "node_modules",

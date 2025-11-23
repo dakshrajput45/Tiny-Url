@@ -1,2 +1,4 @@
 /tinyLink-server/node_modules
 /tinyLink/node_modules
+/tinyLink/.env
+/tinyLink-server/.env
